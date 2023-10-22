@@ -2,7 +2,8 @@ import icons from '../img/icons.svg';
 import { recipeDetailsMarkup } from './recipe';
 import { ingredientList } from './ingredientList';
 import { renderSpinner } from './spinner';
-
+import { recipePage } from './footer';
+import { imageRecipe } from './image';
 const recipeContainer = document.querySelector('.recipe');
 
 const timeout = function (s) {
@@ -22,10 +23,8 @@ async function showRecipe(url) {
     if (!response.ok) {
       throw new Error('No se pudo obtener la receta.');
     }
-
     const { data } = await response.json();
     const { recipe } = data;
-
     return recipe;
   } catch (error) {
     throw error;
@@ -40,13 +39,13 @@ const URL_API =
     renderSpinner(recipeContainer);
     const recipe = await showRecipe(URL_API);
     recipeContainer.innerHTML = '';
-
+    recipeContainer.insertAdjacentHTML('afterbegin', recipePage(recipe));
     recipeContainer.insertAdjacentHTML('afterbegin', ingredientList(recipe));
     recipeContainer.insertAdjacentHTML(
       'afterbegin',
       recipeDetailsMarkup(recipe)
     );
-    console.log(recipe);
+    recipeContainer.insertAdjacentHTML('afterbegin', imageRecipe(recipe));
   } catch (error) {
     hideSpinner();
     console.error('Error al cargar la receta', error);
