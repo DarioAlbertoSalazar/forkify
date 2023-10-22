@@ -31,23 +31,33 @@ async function showRecipe(url) {
   }
 }
 
-const URL_API =
-  'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886';
-
-(async () => {
+const loadRecipe = async () => {
+  const id = location.hash.slice(1);
+  if(!id) {
+    return
+  }
+  const URL_API = `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`;
   try {
     renderSpinner(recipeContainer);
     const recipe = await showRecipe(URL_API);
     recipeContainer.innerHTML = '';
     recipeContainer.insertAdjacentHTML('afterbegin', recipePage(recipe));
     recipeContainer.insertAdjacentHTML('afterbegin', ingredientList(recipe));
-    recipeContainer.insertAdjacentHTML(
-      'afterbegin',
-      recipeDetailsMarkup(recipe)
-    );
+    recipeContainer.insertAdjacentHTML('afterbegin',recipeDetailsMarkup(recipe));
     recipeContainer.insertAdjacentHTML('afterbegin', imageRecipe(recipe));
   } catch (error) {
-    hideSpinner();
     console.error('Error al cargar la receta', error);
   }
-})();
+};
+
+window.addEventListener('hashchange', loadRecipe);
+
+const eventsToHandle = ['hashchange', 'load'];
+
+const handleEvent = (ev) => {
+  loadRecipe();
+};
+
+eventsToHandle.forEach((eventName) => {
+  window.addEventListener(eventName, handleEvent);
+});
